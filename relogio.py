@@ -16,7 +16,7 @@ class Aplicacao:
         self.root.title("Exemplo de Relógio com Tkinter")
 
         # Inicializa o relógio analógico com tamanho ajustado
-        self.relogio = RelogioAnalogico(root, tamanho=300)
+        self.relogio = RelogioAnalogico(root, tamanho=200)
 
         # Label para mostrar a hora digital
         self.hora_digital = tk.Label(root, font=("Helvetica", 16), bg="white", text="")

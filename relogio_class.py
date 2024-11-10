@@ -30,9 +30,9 @@ class RelogioAnalogico:
         for i in range(12):
             angulo = math.radians(i * 30)
             x1 = self.tamanho / 2 + (self.raio - 20) * math.cos(angulo)
-            y1 = self.tamanho / 2 - (self.raio - 20) * math.sin(angulo)
+            y1 = self.tamanho / 2 + (self.raio - 20) * math.sin(angulo)
             x2 = self.tamanho / 2 + self.raio * math.cos(angulo)
-            y2 = self.tamanho / 2 - self.raio * math.sin(angulo)
+            y2 = self.tamanho / 2 + self.raio * math.sin(angulo)
             self.canvas.create_line(x1, y1, x2, y2, fill="black", width=2)
 
     def desenhar_ponteiro(self, angulo, comprimento, cor, largura):
@@ -45,8 +45,9 @@ class RelogioAnalogico:
             cor (str): Cor do ponteiro.
             largura (int): Largura do ponteiro.
         """
+        # Ajuste do ângulo invertendo o eixo Y
         x = self.tamanho / 2 + comprimento * math.cos(angulo)
-        y = self.tamanho / 2 - comprimento * math.sin(angulo)
+        y = self.tamanho / 2 + comprimento * math.sin(angulo)
         return self.canvas.create_line(
             self.tamanho / 2, self.tamanho / 2, x, y, fill=cor, width=largura, tags="ponteiro"
         )
@@ -81,7 +82,10 @@ class RelogioAnalogico:
             self.atualizar_ponteiros()
             await asyncio.sleep(1)
 
+
 '''
+# iniciar_interface
+
 def iniciar_interface():
     """
     Inicializa a interface Tkinter e o loop assíncrono para o relógio analógico.
@@ -101,4 +105,5 @@ def iniciar_interface():
 
 # Chamada da função principal para iniciar o relógio
 iniciar_interface()
+
 '''
