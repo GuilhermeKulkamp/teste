@@ -1,82 +1,50 @@
-import turtle
-import time
+import tkinter as tk
 from datetime import datetime
+import asyncio
+import threading
+from relogio_class import RelogioAnalogico  # Suponha que o código do relógio está em relogio_class.py
 
-# Configuração da tela
-tela = turtle.Screen()
-tela.title("Relógio Analógico")
-tela.setup(width=600, height=600)
-tela.tracer(0)  # Desativa a atualização automática da tela para mais eficiência
+class Aplicacao:
+    def __init__(self, root):
+        """
+        Inicializa a aplicação com um relógio analógico e a hora digital.
 
-# Tartaruga para desenhar o mostrador
-mostrador = turtle.Turtle()
-mostrador.hideturtle()
-mostrador.speed(0)
+        Args:
+            root (tk.Tk): Janela principal da aplicação.
+        """
+        self.root = root
+        self.root.title("Exemplo de Relógio com Tkinter")
 
-# Tartarugas para os ponteiros de hora, minuto e segundo
-ponteiro_hora = turtle.Turtle()
-ponteiro_hora.shape("arrow")
-ponteiro_hora.color("black")
-ponteiro_hora.shapesize(stretch_wid=0.4, stretch_len=8)
-ponteiro_hora.speed(0)
+        # Inicializa o relógio analógico com tamanho ajustado
+        self.relogio = RelogioAnalogico(root, tamanho=300)
 
-ponteiro_minuto = turtle.Turtle()
-ponteiro_minuto.shape("arrow")
-ponteiro_minuto.color("blue")
-ponteiro_minuto.shapesize(stretch_wid=0.3, stretch_len=10)
-ponteiro_minuto.speed(0)
+        # Label para mostrar a hora digital
+        self.hora_digital = tk.Label(root, font=("Helvetica", 16), bg="white", text="")
+        self.hora_digital.pack(pady=10)
 
-ponteiro_segundo = turtle.Turtle()
-ponteiro_segundo.shape("arrow")
-ponteiro_segundo.color("red")
-ponteiro_segundo.shapesize(stretch_wid=0.2, stretch_len=12)
-ponteiro_segundo.speed(0)
+        # Botão para atualizar a hora digital
+        self.btn_atualizar = tk.Button(root, text="Atualizar Hora Digital", command=self.atualizar_hora_digital)
+        self.btn_atualizar.pack(pady=10)
 
-# Função para desenhar o mostrador do relógio
-def desenhar_mostrador():
-    mostrador.penup()
-    mostrador.goto(0, -250)
-    mostrador.pendown()
-    mostrador.circle(250)
-    mostrador.penup()
-    mostrador.goto(0, 0)
-    
-    # Desenhar as marcações das horas
-    for angulo in range(0, 360, 30):
-        mostrador.penup()
-        mostrador.setheading(angulo)
-        mostrador.forward(220)
-        mostrador.pendown()
-        mostrador.forward(30)
-        mostrador.penup()
-        mostrador.goto(0, 0)
+        # Inicia o relógio analógico em um thread separado para evitar bloqueio
+        threading.Thread(target=self.iniciar_relogio_analogico, daemon=True).start()
 
-# Função para atualizar a posição dos ponteiros
-def atualizar_relogio():
-    agora = datetime.now()
-    hora = agora.hour % 12
-    minuto = agora.minute
-    segundo = agora.second
-    
-    # Atualiza os ângulos dos ponteiros
-    angulo_hora = (hora + minuto / 60) * 30  # Cada hora são 30 graus
-    angulo_minuto = (minuto + segundo / 60) * 6  # Cada minuto são 6 graus
-    angulo_segundo = segundo * 6  # Cada segundo são 6 graus
-    
-    # Define as posições dos ponteiros
-    ponteiro_hora.setheading(90 - angulo_hora)
-    ponteiro_minuto.setheading(90 - angulo_minuto)
-    ponteiro_segundo.setheading(90 - angulo_segundo)
-    
-    # Atualiza a tela e agenda a próxima atualização
-    tela.update()
-    tela.ontimer(atualizar_relogio, 1000)
+        # Inicia a atualização da hora digital
+        self.atualizar_hora_digital()
 
-# Função principal
-def main():
-    desenhar_mostrador()
-    atualizar_relogio()
-    tela.mainloop()
+    def atualizar_hora_digital(self):
+        """Atualiza o rótulo de hora digital com a hora atual."""
+        hora_atual = datetime.now().strftime("%H:%M:%S")
+        self.hora_digital.config(text=f"Hora Digital: {hora_atual}")
+        # Agenda a próxima atualização em 1 segundo
+        self.root.after(1000, self.atualizar_hora_digital)
 
-# Executa o programa principal
-main()
+    def iniciar_relogio_analogico(self):
+        """Inicia o relógio analógico no modo assíncrono."""
+        asyncio.run(self.relogio.iniciar_relogio())
+
+# Inicializa a aplicação
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = Aplicacao(root)
+    root.mainloop()
